@@ -12,6 +12,8 @@ add_executable(
 		xsh
 
 		shell.cpp
+		tools.cpp
+		
 )
 
 target_link_libraries(
