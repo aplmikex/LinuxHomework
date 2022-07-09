@@ -6,3 +6,5 @@ cmake-build-release
 log/
 log_history/
 .history/
+.cache
+.gitignore
