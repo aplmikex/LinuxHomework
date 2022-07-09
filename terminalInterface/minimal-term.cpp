@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
   console->setTerminalFont(font);
 
   console->setColorScheme("Ubuntu");
-  const QString shell = "/home/xiang/Simple-Cpp-Shell/Simple C++ Shell/shell";
+  const QString shell = "/home/xiang/LinuxHomework/build/bin/xsh";
   QObject::connect(console, SIGNAL(finished()), mainWindow, SLOT(close()));
 
   mainWindow->setCentralWidget(console);
