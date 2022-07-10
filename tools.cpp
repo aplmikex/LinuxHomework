@@ -1,33 +1,6 @@
 #include "tools.h"
 #include <string>
 
-std::string getHostName(){
-    char hName[256];
-	gethostname(hName, sizeof(hName));
-	std::string hostName = hName;
-    return hostName;
-}
-std::string getName(){
-    uid_t userid;
-    struct passwd* pwd;
-    userid=getuid();
-    pwd=getpwuid(userid);
-    std::string name = pwd->pw_name;
-    return name;
-}
-std::string getHome(){
-    std::string home;
-    home = getenv("HOME");
-    return home;
-}
-void replace1(std::string &path,std::string &home){
-    for(int i=0;i<home.size();i++){
-        if(home[i]!=path[i]){
-            return;
-        }
-    }
-    path = path.replace(0,home.size(),"~");
-}
 
 void replace2(std::string &str,std::string &home){//把~替换回常规目录
     while((int)str.find("~")!=-1){
@@ -57,10 +30,38 @@ std::vector<int> findAll(std::string &str, char pattern) {
 }
 
 bool checkArgs(std::vector<std::string> &args){
-    // std::vector<std::string> tmpargs;
-    // for(int i=0;i<args.size()-1;i++){
-    //     if()
-    // }
+    std::vector<std::string> tmpargs;
+    for(int i=0;i<args.size();i++){
+        if(args[i]!="&"&&args[i]!="|"&&args[i]!=">"){
+            tmpargs.push_back(args[i]);
+        }else{
+            if(tmpargs.empty()){
+                tmpargs.push_back(args[i]);
+            }else{
+                std::string last = tmpargs[tmpargs.size()-1];
+                char c = last[last.size()-1];
+
+                if(c!='&'&&c!='|'&&c!='>')
+                    tmpargs.push_back(args[i]);
+                else{
+                    tmpargs.pop_back();
+                    tmpargs.push_back(last+args[i]);
+                }
+            }
+        }
+    }
+    args.swap(tmpargs);
+    std::vector<std::string>().swap(tmpargs);//置空
+    for(int i=0;i<args.size();i++){
+        char c = args[i][0];
+        if(c!='&'&&c!='|'&&c!='>'){
+            continue;
+        }else{
+            if(args[i]!="&&"&&args[i]!="||"&&args[i]!="&"&&args[i]!="|"&&args[i]!=">"&&args[i]!=">>"&&args[i]!="<"){
+                return false;
+            }
+        }
+    }
     return true;
 }
 
@@ -92,7 +93,6 @@ bool quotationSplit(std::string &line,std::vector<argStru> &tmpargs){
             tmparg.arg = line.substr(lastI,i-lastI);
             tmpargs.push_back(tmparg);
             if(simpleI+1>=simplePos.size()){
-                std::cout<<"出错了"<<std::endl;
                 return false;
             }
             argStru tmparg1;
@@ -106,7 +106,6 @@ bool quotationSplit(std::string &line,std::vector<argStru> &tmpargs){
             tmparg.arg = line.substr(lastI,i-lastI);
             tmpargs.push_back(tmparg);
             if(doubleI+1>=doublePos.size()){
-                std::cout<<"出错了"<<std::endl;
                 return false;
             }
             argStru tmparg1;

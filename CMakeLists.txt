@@ -13,6 +13,7 @@ add_executable(
 
 		shell.cpp
 		tools.cpp
+		shellclass.cpp
 		
 )
 
