@@ -1,14 +1,30 @@
 #include "tools.h"
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <string>
+#include <csignal>
+
 #define MAX_STORAGE_CMDS 500
 
-void purchaseString(std::string &line,std::vector<std::string> &args){
+pid_t sonpid;
 
-    std::istringstream buffer(line);
-    std::copy(std::istream_iterator<std::string>(buffer),
-              std::istream_iterator<std::string>(),
-              std::back_inserter(args));
+void signalHandler(int signum) {
+    kill(sonpid, SIGINT);
+}
+
+
+bool purchaseString(std::string &line,std::vector<std::string> &args){
+
+    std::vector<argStru> tmpargs;
+    if(!quotationSplit(line, tmpargs)){
+        return false;
+    }
+    symbolSplit(tmpargs,args);
+
+    // for(int i=0;i<args.size();i++){
+    //     std::cout<<args[i]<<std::endl;
+    // }
+    return true;
 }
 
 void getHistorys(std::vector<std::string> &historys, int place){
@@ -46,6 +62,7 @@ int execute(std::vector<std::string> &args){
         free(argv);
         return 0;
     }else{
+        sonpid = pid;
         do {
             waitpid(pid, &status, WUNTRACED);
         } while (!WIFEXITED(status) && !WIFSIGNALED(status));
@@ -72,6 +89,7 @@ bool check(std::vector<std::string> &args,std::string &home){
 
 
 int main(){
+    signal(SIGINT, signalHandler);
     bool run=true;
 
     std::string name = getName();
@@ -82,7 +100,7 @@ int main(){
     std::vector<std::string> historys(500);
     int place = 0;
 
-    std::string onceline = "chmod 111 /opt/robot/*";
+    std::string onceline = "chmod 111 /opt/robot/";
     std::vector<std::string> onceargs;
     purchaseString(onceline,onceargs);
     execute(onceargs);
@@ -102,8 +120,8 @@ int main(){
         if(place==MAX_STORAGE_CMDS-1)place=0;
         else place++;
 
-        purchaseString(line,args);
-        if(args.size()==0||check(args,home)==false){
+        
+        if(purchaseString(line,args)==false||args.size()==0||check(args,home)==false){
             continue;
         }
         if(args[0]=="exit"||args[0]=="quit"){
