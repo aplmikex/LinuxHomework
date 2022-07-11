@@ -40,11 +40,11 @@ void Xsh::replace1(){
     this->path = this->path.replace(0,home.size(),"~");
 }
 
-void Xsh::replace2(std::string &str,std::string &home){//把~替换回常规目录
-    while((int)str.find("~")!=-1){
-        str = str.replace(str.find("~"),1,home);
-    }
-}
+// void Xsh::replace2(std::string &str,std::string &home){//把~替换回常规目录
+//     while((int)str.find("~")!=-1){
+//         str = str.replace(str.find("~"),1,home);
+//     }
+// }
 
 void Xsh::updatePath(){
     this->name = getName();

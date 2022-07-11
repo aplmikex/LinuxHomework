@@ -40,7 +40,7 @@ if(BUILD_TERMINAL)
 	add_executable(
 			terminal
 
-			terminalInterface/minimal-term.cpp
+			terminal/terminal.cpp
 	)
 	target_link_libraries(
 			terminal

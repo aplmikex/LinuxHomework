@@ -18,7 +18,7 @@ class Xsh {
 
     Xsh();
     void replace1();//把home路径替换到~显示
-    void replace2(std::string &str,std::string &home);//把~路径替换回home路径
+    // void replace2(std::string &str,std::string &home);//把~路径替换回home路径
     void updatePath();//更新输入路径
     void getHistorys();//获取history并输出
     std::string getHead();//获取输入前的标头
