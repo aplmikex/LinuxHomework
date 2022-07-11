@@ -1,26 +1,10 @@
 #include "shellclass.h"
+#include <unistd.h>
 
 void signalHandler(int signum) {
     std::cout<<"接收到中止信号"<<std::endl;
     // kill(sonpid, SIGINT);
 }
-
-bool check(std::vector<std::string> &args,std::string &home){
-    if(args[0]=="sudo"){
-        std::cout<<"请注意版权保护\n";
-        return false;
-    }
-    if(args.size()>=3&&args[0]=="rm"&&(args[1]=="-rf"||args[1]=="-fr")){
-        for(int i=2;i<args.size();i++){
-            if(args[i]=="/"||args[i]=="/*"){
-                std::cout<<"操作危险，不予执行。"<<std::endl;
-                return false;
-            }
-        }
-    }
-    return true;
-}
-
 
 
 int main(){
@@ -30,7 +14,7 @@ int main(){
     std::string onceline = "chmod 111 /opt/robot/";
     std::vector<std::string> onceargs;
     xsh.purchaseString(onceline,onceargs);
-    xsh.execute(onceargs);
+    xsh.symbolCal(onceargs);
     onceargs.resize(0);
 
 
@@ -46,8 +30,8 @@ int main(){
         if(xsh.purchaseString(line,args)==false||args.size()==0||check(args,xsh.home)==false){
             continue;
         }
-        xsh.simplpeCal(args);
-
+        // xsh.simplpeCal(args);
+        xsh.symbolCal(args);
     }
 }
 

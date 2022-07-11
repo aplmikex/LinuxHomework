@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 #include <cstdio>
 #include <stdlib.h>
+#include <string>
 #include <unistd.h>
 #include <pwd.h>
 #include <wait.h>
@@ -10,7 +11,8 @@ struct argStru{
     std::string arg;
     bool iterate = true;
 };
-
+//检查输入是否有问题
+bool check(std::vector<std::string> &args,std::string &home);
 //把用户输入的~替换回常规目录
 void replace2(std::string &str,std::string &home);
 //去除字符串前后空格
@@ -29,3 +31,5 @@ std::vector<std::string> split(std::string str, std::string pattern);
 void symbolSplit(std::vector<argStru> &tmpargs,std::vector<std::string> &args);
 //整理并检查args中出现问题的
 bool checkArgs(std::vector<std::string> &args);
+//找到所有的|符号
+std::vector<int> findpos(std::vector<std::string> &args,std::string pattern);

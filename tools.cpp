@@ -2,6 +2,25 @@
 #include <string>
 
 
+
+bool check(std::vector<std::string> &args,std::string &home){
+    if(args[0]=="sudo"){
+        std::cout<<"请注意版权保护\n";
+        return false;
+    }
+    if(args.size()>=3&&args[0]=="rm"&&(args[1]=="-rf"||args[1]=="-fr")){
+        for(int i=2;i<args.size();i++){
+            if(args[i]=="/"||args[i]=="/*"){
+                std::cout<<"操作危险，不予执行。"<<std::endl;
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+
+
 void replace2(std::string &str,std::string &home){//把~替换回常规目录
     while((int)str.find("~")!=-1){
         str = str.replace(str.find("~"),1,home);
@@ -65,6 +84,15 @@ bool checkArgs(std::vector<std::string> &args){
     return true;
 }
 
+std::vector<int> findpos(std::vector<std::string> &args,std::string pattern){
+    std::vector<int> pos;
+    for(int i=0;i<args.size();i++){
+        if(args[i]==pattern){
+            pos.push_back(i);
+        }
+    }
+    return pos;
+}
 
 
 
