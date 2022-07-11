@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-
+SET(CMAKE_BUILD_TYPE "Release")
 project(xsh)
 
 set(CMAKE_CXX_STANDARD 14)

@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
   console->setColorScheme("Solarized");
   console->setTerminalOpacity(1);
   console->setColorScheme("Ubuntu");
-  const QString shell = "/home/xiang/LinuxHomework/build/bin/xsh";
+  const QString shell = "./xsh";
   // Here we connect it all together
   QObject::connect(console, &QTermWidget::urlActivated, mainWindow,
                    activateUrl);
