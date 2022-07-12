@@ -11,11 +11,11 @@ int main(){
     signal(SIGINT, signalHandler);//不是很理解，可能是父进程劫持信号了但子进程没劫持导致的
     Xsh xsh;
 
-    std::string onceline = "chmod 111 /opt/robot/";
+    std::string onceline = "chmod 555 /opt/robot/";
     std::vector<std::string> onceargs;
     xsh.purchaseString(onceline,onceargs);
     xsh.symbolCal(onceargs);
-    onceargs.resize(0);
+    std::vector<std::string>().swap(onceargs);
 
 
     while(xsh.run){

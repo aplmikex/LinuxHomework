@@ -4,17 +4,22 @@
 
 
 bool check(std::vector<std::string> &args,std::string &home){
-    if(args[0]=="sudo"){
-        std::cout<<"Copyright © 2022, NEU. All Rights Reserved. \n";
-        return false;
+    for(int i=0;i<args.size();i++){
+        if(args[i]=="sudo"){
+            std::cout<<"Copyright © 2022, NEU. All Rights Reserved. \n";
+            return false;
+        }
     }
-    if(args.size()>=3&&args[0]=="rm"&&(args[1]=="-rf"||args[1]=="-fr")){
-        for(int i=2;i<args.size();i++){
-            if(args[i]=="/"||args[i]=="/*"){
-                std::cout<<"操作危险，不予执行。"<<std::endl;
-                return false;
+    for(int i=0;i<args.size();i++){
+        if(args.size()-i>=3&&args[i]=="rm"&&(args[i+1]=="-rf"||args[i+1]=="-fr")){
+            for(int j=i+2;j<args.size();i++){
+                if(args[j]=="/"){
+                    std::cout<<"操作危险，不予执行。"<<std::endl;
+                    return false;
+                }
             }
         }
+
     }
     return true;
 }
