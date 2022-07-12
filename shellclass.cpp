@@ -28,7 +28,7 @@ std::string Xsh::getHome(){
 }
 std::string Xsh::getHead(){
     char head[500];
-    std::sprintf(head,"\033[0m\033[1;32m%s@%s\033[0m:\033[0m\033[1;34m%s\033[0m$ ",this->name.c_str(),this->hostName.c_str(),this->path.c_str());
+    std::sprintf(head,"\001\033[0m\033[1;32m\002%s@%s\001\033[0m\002:\001\033[0m\033[1;34m\002%s\001\033[0m\002$ ",this->name.c_str(),this->hostName.c_str(),this->path.c_str());
     return std::string(head);
 }
 void Xsh::replace1(){
