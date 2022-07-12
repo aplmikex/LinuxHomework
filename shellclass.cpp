@@ -207,8 +207,64 @@ int Xsh::inPutFileRedirect(std::vector<std::string> &args,std::string pattern){/
 
 }
 
-int Xsh::thePipeline(std::vector<std::string> &args){
-    if(args[args.size()-1]=="|"||args[0]=="|"){
+
+
+
+void Xsh::backCal(std::vector<std::string> &args){//不完全
+    pid_t pid = fork();
+    if(pid<0){
+        std::cout<<"出错了"<<std::endl;
+        return;
+    }else if(pid==0){
+        freopen( "/dev/null", "w", stdout );
+        freopen( "/dev/null", "r", stdin ); 
+        signal(SIGCHLD,SIG_IGN);
+
+        this->runLongCmd(args);
+
+        exit(0);
+    }else{
+        return;
+    }
+}
+
+void Xsh::normalCal(std::vector<std::string> &args){ //不完全
+    if(args[0]=="exit"||args[0]=="quit"){
+        std::cout<<"即将退出"<<std::endl;
+        this->run=false;
+        return;
+    }else if(args[0]=="cd"){
+        if(args.size()>2){
+            std::cout<<"cd的输入数据过多，无法识别"<<std::endl;
+        }else{
+            if (args.size()==1) {
+                args.push_back(this->home);
+            }
+            if(chdir(args[1].c_str())==-1){
+                std::cout<<"输入目录出错"<<std::endl;
+                return;
+            }
+            this->updatePath();
+        }
+        return;
+    }
+    pid_t pid = fork();
+    if(pid<0){
+        std::cout<<"出错了"<<std::endl;
+        return;
+    }else if(pid==0){
+        this->runLongCmd(args);
+        exit(0);
+    }else{
+        int status;
+        do {
+            waitpid(pid, &status, WUNTRACED);
+        } while (!WIFEXITED(status) && !WIFSIGNALED(status));
+    }
+}
+
+int Xsh::runLongCmd(std::vector<std::string> &args){
+        if(args[args.size()-1]=="|"||args[0]=="|"){
         std::cout<<"命令输入出错，无法执行"<<std::endl;
         return -1;
     }
@@ -244,7 +300,24 @@ int Xsh::thePipeline(std::vector<std::string> &args){
                 int fd = open(tmpfile.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0666);
             }
 
-            this->runArgs(parts[i]);
+            auto bigPos = findpos(parts[i],">");
+            auto bigbigPos = findpos(parts[i],">>");
+            auto smallPos = findpos(parts[i],"<");
+            if(bigPos.size()+smallPos.size()+bigbigPos.size()==1){
+                if(bigPos.size()==1){
+                    this->outPutFileRedirect(parts[i], ">");
+                }else if(smallPos.size()==1){
+                    this->inPutFileRedirect(parts[i], "<");
+                }else{
+                    this->outPutFileRedirect(parts[i], ">>");
+                }
+            }else if(bigbigPos.empty()&&bigPos.empty()&&smallPos.empty()){
+                std::vector<std::string> part;
+                part.swap(parts[i]);
+                this->simplpeCal(part);
+            }
+
+
             exit(0);
 
         }else{
@@ -252,99 +325,5 @@ int Xsh::thePipeline(std::vector<std::string> &args){
                 waitpid(pid, &status, WUNTRACED);
             } while (!WIFEXITED(status) && !WIFSIGNALED(status));
         }
-    }
-
-}
-
-
-void Xsh::backCal(std::vector<std::string> &args){//不完全
-    pid_t pid = fork();
-    if(pid<0){
-        std::cout<<"出错了"<<std::endl;
-        return;
-    }else if(pid==0){
-        freopen( "/dev/null", "w", stdout );
-        freopen( "/dev/null", "r", stdin ); 
-        signal(SIGCHLD,SIG_IGN);
-
-        auto orPos = findpos(args,"|");
-        auto bigPos = findpos(args,">");
-        auto bigbigPos = findpos(args,">>");
-        auto smallPos = findpos(args,"<");
-        if(!orPos.empty()){
-            if(bigPos.empty() && smallPos.empty() && bigbigPos.empty()){
-                thePipeline(args);
-            }else{
-                return;
-            }
-        }else if(bigPos.size()+smallPos.size()+bigbigPos.size()==1){
-            if(bigPos.size()==1){
-                this->outPutFileRedirect(args, ">");
-            }else if(smallPos.size()==1){
-                this->inPutFileRedirect(args, "<");
-            }else{
-                this->outPutFileRedirect(args, ">>");
-            }
-        }else if(bigbigPos.empty()&&orPos.empty()&&bigPos.empty()&&smallPos.empty()){
-            this->simplpeCal(args);
-        }
-        exit(0);
-    }else{
-        return;
-    }
-}
-
-void Xsh::normalCal(std::vector<std::string> &args){ //不完全
-    if(args[0]=="exit"||args[0]=="quit"){
-        std::cout<<"即将退出"<<std::endl;
-        this->run=false;
-        return;
-    }else if(args[0]=="cd"){
-        if(args.size()>2){
-            std::cout<<"cd的输入数据过多，无法识别"<<std::endl;
-        }else{
-            if (args.size()==1) {
-                args.push_back(this->home);
-            }
-            if(chdir(args[1].c_str())==-1){
-                std::cout<<"输入目录出错"<<std::endl;
-                return;
-            }
-            this->updatePath();
-        }
-        return;
-    }
-    pid_t pid = fork();
-    if(pid<0){
-        std::cout<<"出错了"<<std::endl;
-        return;
-    }else if(pid==0){
-        auto orPos = findpos(args,"|");
-        auto bigPos = findpos(args,">");
-        auto bigbigPos = findpos(args,">>");
-        auto smallPos = findpos(args,"<");
-        if(!orPos.empty()){
-            if(bigPos.empty() && smallPos.empty() && bigbigPos.empty()){
-                thePipeline(args);
-            }else{
-                return;
-            }
-        }else if(bigPos.size()+smallPos.size()+bigbigPos.size()==1){
-            if(bigPos.size()==1){
-                this->outPutFileRedirect(args, ">");
-            }else if(smallPos.size()==1){
-                this->inPutFileRedirect(args, "<");
-            }else{
-                this->outPutFileRedirect(args, ">>");
-            }
-        }else if(bigbigPos.empty()&&orPos.empty()&&bigPos.empty()&&smallPos.empty()){
-            this->simplpeCal(args);
-        }
-        exit(0);
-    }else{
-        int status;
-        do {
-            waitpid(pid, &status, WUNTRACED);
-        } while (!WIFEXITED(status) && !WIFSIGNALED(status));
     }
 }

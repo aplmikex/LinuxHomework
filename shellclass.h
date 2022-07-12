@@ -28,11 +28,10 @@ class Xsh {
     void symbolCal(std::vector<std::string> &args);//符号解析调用
     void backCal(std::vector<std::string> &args);//后台运行
     void normalCal(std::vector<std::string> &args);//前台运行
-    // int outPutFileRedirect(std::vector<std::string> &args,std::string &pattern);//用于解析处理输出文件命令
     void runArgs(std::vector<std::string> &args);//直接调用系统函数执行命令
     int outPutFileRedirect(std::vector<std::string> &args,std::string pattern);//最后执行重定向输出文件
     int inPutFileRedirect(std::vector<std::string> &args,std::string pattern);//最后执行重定向输入文件
-    int thePipeline(std::vector<std::string> &args);//管道实现
+    int runLongCmd(std::vector<std::string> &args);
 
     private:
     std::vector<std::string> historys;
