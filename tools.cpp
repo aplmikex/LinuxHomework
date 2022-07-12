@@ -5,7 +5,7 @@
 
 bool check(std::vector<std::string> &args,std::string &home){
     if(args[0]=="sudo"){
-        std::cout<<"请注意版权保护\n";
+        std::cout<<"Copyright © 2022, NEU. All Rights Reserved. \n";
         return false;
     }
     if(args.size()>=3&&args[0]=="rm"&&(args[1]=="-rf"||args[1]=="-fr")){
