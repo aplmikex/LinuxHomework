@@ -56,7 +56,7 @@ std::vector<int> findAll(std::string &str, char pattern) {
 bool checkArgs(std::vector<std::string> &args){
     std::vector<std::string> tmpargs;
     for(int i=0;i<args.size();i++){
-        if(args[i]!="&"&&args[i]!="|"&&args[i]!=">"){
+        if(args[i]!="&"&&args[i]!="|"&&args[i]!=">"&&args[i]!="<"){
             tmpargs.push_back(args[i]);
         }else{
             if(tmpargs.empty()){
@@ -65,7 +65,7 @@ bool checkArgs(std::vector<std::string> &args){
                 std::string last = tmpargs[tmpargs.size()-1];
                 char c = last[last.size()-1];
 
-                if(c!='&'&&c!='|'&&c!='>')
+                if(c!='&'&&c!='|'&&c!='>'&&c!='<')
                     tmpargs.push_back(args[i]);
                 else{
                     tmpargs.pop_back();
@@ -78,7 +78,7 @@ bool checkArgs(std::vector<std::string> &args){
     std::vector<std::string>().swap(tmpargs);//置空
     for(int i=0;i<args.size();i++){
         char c = args[i][0];
-        if(c!='&'&&c!='|'&&c!='>'){
+        if(c!='&'&&c!='|'&&c!='>'&&c!='<'){
             continue;
         }else{
             if(args[i]!="&&"&&args[i]!="||"&&args[i]!="&"&&args[i]!="|"&&args[i]!=">"&&args[i]!=">>"&&args[i]!="<"){
@@ -184,6 +184,14 @@ void symbolSplit(std::vector<argStru> &tmpargs,std::vector<std::string> &args){
             }
             strs.swap(tmp);
             std::vector<std::string>().swap(tmp);//tmp置空，strs为分割完的
+
+            for(int j=0;j<strs.size();j++){
+                std::vector<std::string> strs1 = split(strs[j], "<");
+                tmp.insert(tmp.end(),strs1.begin(),strs1.end());
+            }
+            strs.swap(tmp);
+            std::vector<std::string>().swap(tmp);//tmp置空，strs为分割完的
+
 
             for(int j=0;j<strs.size();j++){
                 std::vector<std::string> strs1;
