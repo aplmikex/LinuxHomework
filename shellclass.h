@@ -32,6 +32,7 @@ class Xsh {
     int outPutFileRedirect(std::vector<std::string> &args,std::string pattern);//最后执行重定向输出文件
     int inPutFileRedirect(std::vector<std::string> &args,std::string pattern);//最后执行重定向输入文件
     int runLongCmd(std::vector<std::string> &args);
+    int changeStdIO(std::vector<std::string> &args);
 
     private:
     std::vector<std::string> historys;

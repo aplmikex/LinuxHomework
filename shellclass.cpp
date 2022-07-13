@@ -154,6 +154,51 @@ void Xsh::symbolCal(std::vector<std::string> &args){
     args.pop_back();
 }
 
+int Xsh::changeStdIO(std::vector<std::string> &args){
+    auto bigPos = findpos(args,">");
+    auto bigbigPos = findpos(args,">>");
+    auto smallPos = findpos(args,"<");
+    int lastArgs=args.size();
+
+    bool ifOutput = false;
+
+
+    for(int i=0;i<args.size();i++){
+        if(std::count(bigbigPos.begin(),bigbigPos.end(),i)){
+            ifOutput = true;
+            if(i<lastArgs){
+                lastArgs = i;
+            }
+            int oflag = O_WRONLY|O_APPEND|O_CREAT|O_APPEND;
+            close(STDOUT_FILENO);
+            int fd = open(args[i+1].c_str(), oflag, 0666);
+        }else if(std::count(bigPos.begin(),bigPos.end(),i)){
+            ifOutput = true;
+            if(i<lastArgs){
+                lastArgs = i;
+            }
+            int oflag = O_WRONLY|O_CREAT|O_TRUNC;
+            close(STDOUT_FILENO);
+            int fd = open(args[i+1].c_str(), oflag, 0666);
+        }else if(std::count(smallPos.begin(),smallPos.end(),i)){
+            if(i<lastArgs){
+                lastArgs = i;
+            }
+            if(ifOutput){
+                continue;
+            }
+            int oflag = O_RDONLY;
+            close(STDIN_FILENO);
+            int fd = open(args[i+1].c_str(), oflag); //输入重定向
+            remove(args[i+1].c_str());
+        }
+    }
+    std::vector<std::string> part(args.begin(),args.begin()+lastArgs);
+    this->runArgs(part);
+
+    exit(0);
+
+}
 
 int Xsh::outPutFileRedirect(std::vector<std::string> &args,std::string pattern){//在该命令只能有一个重定向符号
     auto Pos = findpos(args,pattern)[0];
@@ -303,18 +348,12 @@ int Xsh::runLongCmd(std::vector<std::string> &args){
             auto bigPos = findpos(parts[i],">");
             auto bigbigPos = findpos(parts[i],">>");
             auto smallPos = findpos(parts[i],"<");
-            if(bigPos.size()+smallPos.size()+bigbigPos.size()==1){
-                if(bigPos.size()==1){
-                    this->outPutFileRedirect(parts[i], ">");
-                }else if(smallPos.size()==1){
-                    this->inPutFileRedirect(parts[i], "<");
-                }else{
-                    this->outPutFileRedirect(parts[i], ">>");
-                }
-            }else if(bigbigPos.empty()&&bigPos.empty()&&smallPos.empty()){
+            if(bigbigPos.empty()&&bigPos.empty()&&smallPos.empty()){
                 std::vector<std::string> part;
                 part.swap(parts[i]);
                 this->simplpeCal(part);
+            }else{
+                changeStdIO(parts[i]);
             }
 
 
